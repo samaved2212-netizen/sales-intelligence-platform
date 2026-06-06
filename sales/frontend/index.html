@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NimitAI — Sales Intelligence</title>
+  <link rel="stylesheet" href="style.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- ─── Particle Background ─────────────────────────────────────── -->
+<canvas id="particles"></canvas>
+
+<!-- ─── Sidebar ─────────────────────────────────────────────────── -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">N</div>
+    <span class="logo-text">NimitAI</span>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="#" class="nav-item active" data-tab="dashboard">
+      <span class="nav-icon">📊</span><span>Dashboard</span>
+    </a>
+    <a href="#" class="nav-item" data-tab="transcript">
+      <span class="nav-icon">🎙️</span><span>Transcript Analyser</span>
+    </a>
+    <a href="#" class="nav-item" data-tab="salesdata">
+      <span class="nav-icon">📈</span><span>Sales Data</span>
+    </a>
+    <a href="#" class="nav-item" data-tab="insights">
+      <span class="nav-icon">🧠</span><span>AI Insights</span>
+    </a>
+    <a href="#" class="nav-item" data-tab="chat">
+      <span class="nav-icon">💬</span><span>Ask Your Data</span>
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="api-status" id="apiStatus">
+      <span class="status-dot"></span>
+      <span>API Connected</span>
+    </div>
+  </div>
+</aside>
+
+<!-- ─── Main Content ─────────────────────────────────────────────── -->
+<main class="main-content">
+
+  <!-- Top Bar -->
+  <header class="topbar">
+    <button class="menu-toggle" id="menuToggle">☰</button>
+    <div class="topbar-title" id="pageTitle">Dashboard</div>
+    <div class="topbar-actions">
+      <div class="dark-toggle" id="darkToggle" title="Toggle Dark Mode">🌙</div>
+      <div class="avatar">AI</div>
+    </div>
+  </header>
+
+  <!-- ─── TAB: Dashboard ──────────────────────────────────────────── -->
+  <section class="tab-content active" id="tab-dashboard">
+    <div class="page-hero">
+      <h1>Sales Intelligence <span class="gradient-text">Dashboard</span></h1>
+      <p>AI-powered insights from your sales data in real time.</p>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid" id="kpiGrid">
+      <div class="kpi-card" style="--accent:#7c3aed">
+        <div class="kpi-icon">💰</div>
+        <div class="kpi-value" id="kpiRevenue">—</div>
+        <div class="kpi-label">Total Revenue</div>
+        <div class="kpi-trend" id="kpiRevTrend"></div>
+      </div>
+      <div class="kpi-card" style="--accent:#059669">
+        <div class="kpi-icon">📦</div>
+        <div class="kpi-value" id="kpiOrders">—</div>
+        <div class="kpi-label">Total Orders</div>
+        <div class="kpi-trend" id="kpiOrdTrend"></div>
+      </div>
+      <div class="kpi-card" style="--accent:#d97706">
+        <div class="kpi-icon">🏆</div>
+        <div class="kpi-value" id="kpiTopProduct">—</div>
+        <div class="kpi-label">Top Product</div>
+        <div class="kpi-trend"></div>
+      </div>
+      <div class="kpi-card" style="--accent:#dc2626">
+        <div class="kpi-icon">⚠️</div>
+        <div class="kpi-value" id="kpiAlerts">—</div>
+        <div class="kpi-label">Active Alerts</div>
+        <div class="kpi-trend"></div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-row">
+      <div class="chart-card wide">
+        <div class="chart-header">
+          <h3>Revenue Trend</h3>
+          <div class="chart-period-btns">
+            <button class="period-btn active" data-p="monthly">Monthly</button>
+            <button class="period-btn" data-p="weekly">Weekly</button>
+          </div>
+        </div>
+        <canvas id="trendChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header"><h3>Product Mix</h3></div>
+        <canvas id="productChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Alerts + Customer Section -->
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-header"><h3>⚠️ Alerts</h3></div>
+        <div id="alertsList" class="alerts-list"><p class="empty-msg">Load data to see alerts</p></div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><h3>🧑‍💼 Top Customers</h3></div>
+        <div id="customerList" class="customer-list"><p class="empty-msg">Load data to see customers</p></div>
+      </div>
+    </div>
+
+    <div class="load-demo-bar">
+      <button class="btn btn-primary" id="loadDemoBtn">⚡ Load Demo Data & Analyse</button>
+      <span class="hint">or go to Sales Data tab to upload your own CSV</span>
+    </div>
+  </section>
+
+  <!-- ─── TAB: Transcript ─────────────────────────────────────────── -->
+  <section class="tab-content" id="tab-transcript">
+    <div class="page-hero">
+      <h1>Meeting Transcript <span class="gradient-text">Analyser</span></h1>
+      <p>Paste any sales call transcript and get instant AI coaching signals.</p>
+    </div>
+
+    <div class="transcript-layout">
+      <div class="panel transcript-input-panel">
+        <div class="panel-header">
+          <h3>📋 Paste Transcript</h3>
+          <button class="btn btn-ghost btn-sm" id="loadSampleTranscript">Load Sample</button>
+        </div>
+        <textarea id="transcriptInput" placeholder="Rep: Hi, thanks for joining...
+Prospect: Sure, we've been looking at solutions like yours..."></textarea>
+        <div class="transcript-actions">
+          <button class="btn btn-primary" id="analyseBtn">
+            <span class="btn-icon">🔍</span> Analyse Transcript
+          </button>
+          <button class="btn btn-ghost" id="clearTranscriptBtn">Clear</button>
+        </div>
+      </div>
+
+      <div class="panel transcript-results-panel" id="transcriptResults">
+        <div class="panel-header"><h3>🎯 Detected Signals</h3></div>
+        <div id="signalsContainer" class="signals-empty">
+          <div class="empty-state">
+            <div class="empty-icon">🎙️</div>
+            <p>Paste a transcript and click Analyse to see AI-detected signals</p>
+          </div>
+        </div>
+        <div id="transcriptSummary" class="transcript-summary hidden"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── TAB: Sales Data ─────────────────────────────────────────── -->
+  <section class="tab-content" id="tab-salesdata">
+    <div class="page-hero">
+      <h1>Sales <span class="gradient-text">Data Hub</span></h1>
+      <p>Upload your CSV or use demo data. We'll handle the rest.</p>
+    </div>
+
+    <div class="upload-zone" id="uploadZone">
+      <div class="upload-icon">📂</div>
+      <h3>Drop CSV file here or click to browse</h3>
+      <p>Supports: CSV, JSON</p>
+      <input type="file" id="fileInput" accept=".csv,.json" hidden/>
+      <button class="btn btn-outline" onclick="document.getElementById('fileInput').click()">Browse File</button>
+    </div>
+
+    <div class="or-divider"><span>or</span></div>
+
+    <div class="manual-entry-bar">
+      <button class="btn btn-primary" id="loadDemoData2">⚡ Use Demo Data (90 days)</button>
+      <span class="hint">Generates realistic sample data instantly</span>
+    </div>
+
+    <div id="dataPreview" class="panel hidden">
+      <div class="panel-header">
+        <h3>📋 Data Preview</h3>
+        <span id="dataRecordCount" class="badge"></span>
+      </div>
+      <div class="table-wrapper">
+        <table id="dataTable">
+          <thead><tr id="tableHead"></tr></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <div class="panel-footer">
+        <button class="btn btn-primary" id="runAnalysisBtn">🤖 Run AI Analysis</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── TAB: Insights ───────────────────────────────────────────── -->
+  <section class="tab-content" id="tab-insights">
+    <div class="page-hero">
+      <h1>AI-Generated <span class="gradient-text">Insights</span></h1>
+      <p>Deep analysis and predictions powered by Claude AI.</p>
+    </div>
+
+    <div id="insightsContainer">
+      <div class="empty-state panel">
+        <div class="empty-icon">🧠</div>
+        <p>Load sales data first, then return here for AI insights</p>
+        <button class="btn btn-primary mt-1" id="goToDataBtn">Go to Sales Data</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── TAB: Chat ───────────────────────────────────────────────── -->
+  <section class="tab-content" id="tab-chat">
+    <div class="page-hero">
+      <h1>Ask Your <span class="gradient-text">Data</span></h1>
+      <p>Chat with your sales data using natural language.</p>
+    </div>
+
+    <div class="chat-container panel">
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-msg assistant">
+          <div class="msg-avatar">AI</div>
+          <div class="msg-bubble">
+            Hi! I'm your sales AI assistant. Load some data in the Sales Data tab, then ask me anything — like "What's the best performing product?" or "Any concerning trends?"
+          </div>
+        </div>
+      </div>
+      <div class="chat-quick-prompts">
+        <button class="quick-btn" data-q="What is the best performing product?">Best product?</button>
+        <button class="quick-btn" data-q="Are there any sales drops I should worry about?">Any drops?</button>
+        <button class="quick-btn" data-q="Who are my top customers?">Top customers?</button>
+        <button class="quick-btn" data-q="What is the overall sales trend?">Sales trend?</button>
+      </div>
+      <div class="chat-input-row">
+        <input type="text" id="chatInput" placeholder="Ask anything about your sales data..." />
+        <button class="btn btn-primary" id="chatSendBtn">Send ➤</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ─── Global Loader Overlay ────────────────────────────────────── -->
+<div class="loader-overlay hidden" id="loaderOverlay">
+  <div class="loader-card">
+    <div class="spinner"></div>
+    <p id="loaderText">Analysing with Claude AI...</p>
+  </div>
+</div>
+
+<!-- ─── Toast ─────────────────────────────────────────────────────── -->
+<div class="toast hidden" id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
